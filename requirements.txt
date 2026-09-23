@@ -1,0 +1,9 @@
+numpy
+matplotlib
+torch
+segyio
+scikit-image
+
+# Only required for src/legacy_unet3d.py (2019-era TF1/Keras baseline)
+# tensorflow==1.x
+# keras==2.2.4

@@ -12,10 +12,41 @@ Labelled fault picks are scarce and expensive, while raw 3D seismic data is comp
 2. **Fine-tuning for fault segmentation.** The pretrained encoder is transplanted into a U-Net-style segmentation head (`FaultSegModel`) and fine-tuned on labelled fault patches — first with the encoder frozen, then jointly at a lower learning rate — supervised with a combined BCE + Dice loss.
 3. **Baseline comparison.** The self-supervised pipeline is benchmarked against two supervised baselines trained from scratch: a simplified 3D U-Net in the style of Wu et al.'s FaultSeg3D (`src/legacy_unet3d.py`, `configs/legacy_unet3d_architecture.json`) and a GAN-based fault segmentation model. Qualitative and patch-level comparisons between all three are explored in `notebooks/04_model_comparison_faultseg_vs_faultgan.ipynb`.
 
+## Results
+
+All figures below are saved outputs from the project notebooks and the trained H11 model package, not re-rendered or synthesized for this README.
+
+**Fine-tuned model prediction on a volume slice.** Seismic slice, predicted fault probability, and thresholded binary fault mask from the self-supervised fine-tuned model (`notebooks/03_mae_ssl_pretraining_and_inference.ipynb`):
+
+![SSL fine-tuned prediction on a field volume slice](results/ssl_finetuned_prediction_volume.png)
+
+**Prediction vs. ground truth.** Input patch, model prediction, and ground-truth fault labels:
+
+![Prediction vs ground truth](results/ssl_prediction_vs_groundtruth.png)
+
+**Baseline comparison on synthetic data.** FaultSeg and FaultGAN predictions on synthetic patch 8 (`notebooks/04_model_comparison_faultseg_vs_faultgan.ipynb`):
+
+![Baseline comparison, synthetic patch 8](results/baseline_comparison_synthetic_patch8.png)
+
+**Baseline comparison on field data.** FaultSeg (top) vs. the Torch model (bottom) on field patch 1:
+
+![Baseline comparison, field patch 1](results/baseline_comparison_field_patch1.png)
+
+**Training curve.** Train and validation loss over 200 fine-tuning epochs for the H11 model. Validation loss flattens at roughly 0.16 from about epoch 75 onward while training loss continues to fall to about 0.07, a widening gap that points to overfitting on the synthetic training patches:
+
+![H11 training curve](results/h11_training_curve.png)
+
+**H11 predictions on synthetic and field patches.** On a synthetic patch the model predicts clean, continuous fault planes. On a Kerry-3D field patch the predictions follow the main fault trends but are fragmented and noisier, reflecting a synthetic-to-field domain gap:
+
+| Synthetic patch 8 | Kerry-3D patch 0 |
+|---|---|
+| ![H11 on synthetic patch 8](results/h11_synthetic_patch8_prediction.png) | ![H11 on Kerry-3D patch 0](results/h11_kerry3d_patch0_prediction.png) |
+
 ## Repository structure
 
 ```
 SSL/
+├── results/                                       # figures saved from notebook outputs
 ├── notebooks/
 │   ├── 01_kerry3d_data_exploration.ipynb          # SEG-Y loading, header scanning, 3D visualization
 │   ├── 02_segy_dataset_inspection.ipynb           # dataset sanity checks, sub-cube extraction
